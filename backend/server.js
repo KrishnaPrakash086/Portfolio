@@ -1,17 +1,28 @@
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
+});
+
 const express = require("express");
+const app = express();
 const cors = require("cors");
 const { Sequelize, DataTypes } = require("sequelize");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const app = express();
 app.use(cors());
 app.use(express.json());
 
 const sequelize = new Sequelize({
   dialect: "sqlite",
   storage: "./portfolio.db",
+  logging: (msg) => console.log("Sequelize:", msg),
 });
 
 const User = sequelize.define(
@@ -24,6 +35,11 @@ const User = sequelize.define(
     hooks: {
       beforeCreate: async (user) => {
         user.password = await bcrypt.hash(user.password, 10);
+      },
+      beforeUpdate: async (user) => {
+        if (user.changed("password")) {
+          user.password = await bcrypt.hash(user.password, 10);
+        }
       },
     },
   }
@@ -111,8 +127,17 @@ app.delete("/api/content/:id", auth, async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 sequelize
-  .sync({ force: true })
-  .then(() => {
+  .sync({ force: false }) // Changed to false to preserve data
+  .then(async () => {
+    // Seed an admin user if none exists
+    const adminUser = await User.findOne({ where: { username: "admin" } });
+    if (!adminUser) {
+      await User.create({ username: "admin", password: "password123" });
+      console.log("Default admin user created: admin/password123");
+    }
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
-  .catch((err) => console.error("Failed to start server:", err));
+  .catch((err) => {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  });
