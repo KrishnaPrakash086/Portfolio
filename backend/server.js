@@ -77,7 +77,9 @@ app.post("/api/auth/login", async (req, res) => {
 
 app.get("/api/content", async (req, res) => {
   try {
-    const content = await Content.findAll();
+    const { userId } = req.query;
+    const where = userId ? { userId } : {};
+    const content = await Content.findAll({ where });
     res.json(content);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch content" });

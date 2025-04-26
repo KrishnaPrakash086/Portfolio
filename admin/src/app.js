@@ -22,6 +22,20 @@ const App = () => {
     endDate: "",
     description: "",
   });
+  const [achievement, setAchievement] = useState({
+    title: "",
+    description: "",
+  });
+  const [extracurricular, setExtracurricular] = useState({
+    activity: "",
+    role: "",
+  });
+  const [seminar, setSeminar] = useState({ name: "", date: "" });
+  const [hackathon, setHackathon] = useState({
+    name: "",
+    date: "",
+    achievement: "",
+  });
 
   useEffect(() => {
     if (token) {
@@ -63,6 +77,13 @@ const App = () => {
           endDate: "",
           description: "",
         });
+      if (type === "achievement")
+        setAchievement({ title: "", description: "" });
+      if (type === "extracurricular")
+        setExtracurricular({ activity: "", role: "" });
+      if (type === "seminar") setSeminar({ name: "", date: "" });
+      if (type === "hackathon")
+        setHackathon({ name: "", date: "", achievement: "" });
     } catch (err) {
       alert(`Failed to add ${type}`);
     }
@@ -259,7 +280,7 @@ const App = () => {
         </ul>
       </div>
 
-      <div>
+      <div className="mb-8">
         <h3 className="text-lg font-semibold mb-2">Work Experience</h3>
         <input
           type="text"
@@ -306,6 +327,176 @@ const App = () => {
             .map((item) => (
               <li key={item.id} className="flex justify-between mb-2">
                 {item.data.title}
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="p-1 bg-red-500 text-white rounded"
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+        </ul>
+      </div>
+
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold mb-2">Achievements</h3>
+        <input
+          type="text"
+          value={achievement.title}
+          onChange={(e) =>
+            setAchievement({ ...achievement, title: e.target.value })
+          }
+          placeholder="Achievement Title"
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <textarea
+          value={achievement.description}
+          onChange={(e) =>
+            setAchievement({ ...achievement, description: e.target.value })
+          }
+          placeholder="Description"
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <button
+          onClick={() => handleSubmit("achievement", achievement)}
+          className="w-full p-2 bg-blue-500 text-white rounded"
+        >
+          Add Achievement
+        </button>
+        <ul className="mt-2">
+          {content
+            .filter((c) => c.type === "achievement")
+            .map((item) => (
+              <li key={item.id} className="flex justify-between mb-2">
+                {item.data.title}
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="p-1 bg-red-500 text-white rounded"
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+        </ul>
+      </div>
+
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold mb-2">Extracurriculars</h3>
+        <input
+          type="text"
+          value={extracurricular.activity}
+          onChange={(e) =>
+            setExtracurricular({ ...extracurricular, activity: e.target.value })
+          }
+          placeholder="Activity"
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <input
+          type="text"
+          value={extracurricular.role}
+          onChange={(e) =>
+            setExtracurricular({ ...extracurricular, role: e.target.value })
+          }
+          placeholder="Role"
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <button
+          onClick={() => handleSubmit("extracurricular", extracurricular)}
+          className="w-full p-2 bg-blue-500 text-white rounded"
+        >
+          Add Extracurricular
+        </button>
+        <ul className="mt-2">
+          {content
+            .filter((c) => c.type === "extracurricular")
+            .map((item) => (
+              <li key={item.id} className="flex justify-between mb-2">
+                {item.data.activity} - {item.data.role}
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="p-1 bg-red-500 text-white rounded"
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+        </ul>
+      </div>
+
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold mb-2">Seminars</h3>
+        <input
+          type="text"
+          value={seminar.name}
+          onChange={(e) => setSeminar({ ...seminar, name: e.target.value })}
+          placeholder="Seminar Name"
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <input
+          type="date"
+          value={seminar.date}
+          onChange={(e) => setSeminar({ ...seminar, date: e.target.value })}
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <button
+          onClick={() => handleSubmit("seminar", seminar)}
+          className="w-full p-2 bg-blue-500 text-white rounded"
+        >
+          Add Seminar
+        </button>
+        <ul className="mt-2">
+          {content
+            .filter((c) => c.type === "seminar")
+            .map((item) => (
+              <li key={item.id} className="flex justify-between mb-2">
+                {item.data.name} ({item.data.date})
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="p-1 bg-red-500 text-white rounded"
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+        </ul>
+      </div>
+
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold mb-2">Hackathons</h3>
+        <input
+          type="text"
+          value={hackathon.name}
+          onChange={(e) => setHackathon({ ...hackathon, name: e.target.value })}
+          placeholder="Hackathon Name"
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <input
+          type="date"
+          value={hackathon.date}
+          onChange={(e) => setHackathon({ ...hackathon, date: e.target.value })}
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <input
+          type="text"
+          value={hackathon.achievement}
+          onChange={(e) =>
+            setHackathon({ ...hackathon, achievement: e.target.value })
+          }
+          placeholder="Achievement (e.g., 1st Place)"
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <button
+          onClick={() => handleSubmit("hackathon", hackathon)}
+          className="w-full p-2 bg-blue-500 text-white rounded"
+        >
+          Add Hackathon
+        </button>
+        <ul className="mt-2">
+          {content
+            .filter((c) => c.type === "hackathon")
+            .map((item) => (
+              <li key={item.id} className="flex justify-between mb-2">
+                {item.data.name} - {item.data.achievement} ({item.data.date})
                 <button
                   onClick={() => handleDelete(item.id)}
                   className="p-1 bg-red-500 text-white rounded"
